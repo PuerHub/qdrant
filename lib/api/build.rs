@@ -3,7 +3,6 @@ use std::process::Command;
 use std::{env, str};
 
 use common::defaults;
-use tonic_build::Builder;
 
 fn main() -> std::io::Result<()> {
     // Ensure Qdrant version is configured correctly
@@ -11,28 +10,6 @@ fn main() -> std::io::Result<()> {
         defaults::QDRANT_VERSION.to_string(),
         env!("CARGO_PKG_VERSION"),
         "crate version does not match with defaults.rs",
-    );
-
-    let build_out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-
-    // Build gRPC bits from proto file
-    tonic_build::configure()
-        // Because we want to attach all validation rules to the generated gRPC types, we must do
-        // so by extending the builder. This is ugly, but better than manually implementing
-        // `Validation` for all these types and seems to be the best approach. The line below
-        // configures all attributes.
-        .configure_validation()
-        .file_descriptor_set_path(build_out_dir.join("qdrant_descriptor.bin"))
-        .out_dir("src/grpc/") // saves generated structures at this location
-        .compile(
-            &["src/grpc/proto/qdrant.proto"], // proto entry point
-            &["src/grpc/proto"], // specify the root location to search proto dependencies
-        )?;
-
-    // Append trait extension imports to generated gRPC output
-    append_to_file(
-        "src/grpc/qdrant.rs",
-        "use super::validate::ValidateExt;\nuse validator::Validate;",
     );
 
     // Fetch git commit ID and pass it to the compiler
@@ -52,10 +29,46 @@ fn main() -> std::io::Result<()> {
         println!("cargo:rustc-env=GIT_COMMIT_ID={commit_id}");
     }
 
+    // Skip proto compilation when grpc feature is not enabled
+    if env::var_os("CARGO_FEATURE_GRPC").is_none() {
+        return Ok(());
+    }
+
+    grpc_build()
+}
+
+#[cfg(feature = "grpc")]
+fn grpc_build() -> std::io::Result<()> {
+    use tonic_build::Builder;
+
+    let build_out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+
+    // Build gRPC bits from proto file
+    tonic_build::configure()
+        .configure_validation()
+        .file_descriptor_set_path(build_out_dir.join("qdrant_descriptor.bin"))
+        .out_dir("src/grpc/") // saves generated structures at this location
+        .compile(
+            &["src/grpc/proto/qdrant.proto"], // proto entry point
+            &["src/grpc/proto"], // specify the root location to search proto dependencies
+        )?;
+
+    // Append trait extension imports to generated gRPC output
+    append_to_file(
+        "src/grpc/qdrant.rs",
+        "use super::validate::ValidateExt;\nuse validator::Validate;",
+    );
+
+    Ok(())
+}
+
+#[cfg(not(feature = "grpc"))]
+fn grpc_build() -> std::io::Result<()> {
     Ok(())
 }
 
 /// Extension to [`Builder`] to configure validation attributes.
+#[cfg(feature = "grpc")]
 trait BuilderExt {
     fn configure_validation(self) -> Self;
     fn validates(self, fields: &[(&str, &str)], extra_derives: &[&str]) -> Self;
@@ -65,6 +78,7 @@ trait BuilderExt {
     fn field_validates(self, paths: &[(&str, &str)]) -> Self;
 }
 
+#[cfg(feature = "grpc")]
 impl BuilderExt for Builder {
     fn configure_validation(self) -> Self {
         configure_validation(self)
@@ -109,6 +123,7 @@ impl BuilderExt for Builder {
 /// Configure additional attributes required for validation on generated gRPC types.
 ///
 /// These are grouped by service file.
+#[cfg(feature = "grpc")]
 #[rustfmt::skip]
 fn configure_validation(builder: Builder) -> Builder {
     builder

@@ -28,7 +28,7 @@ approx = "0.5.1"
 collection = { path = ".", features = ["testing"] }
 common = { path = "../common/common", features = ["testing"] }
 segment = { path = "../segment", default-features = false, features = ["testing"] }
-shard = { path = "../shard", default-features = false, features = ["testing"] }
+shard = { path = "../shard", default-features = false, features = ["testing", "grpc"] }
 
 
 [target.'cfg(not(target_os = "windows"))'.dev-dependencies]
@@ -75,7 +75,7 @@ issues = { path = "../common/issues" }
 segment = { path = "../segment", default-features = false }
 shard = { path = "../shard", default-features = false }
 sparse = { path = "../sparse" }
-api = { path = "../api" }
+api = { path = "../api", features = ["grpc"] }
 
 itertools = { workspace = true }
 indicatif = { workspace = true }

@@ -111,7 +111,7 @@ charabia = { version = "0.9.7", default-features = false, features = [
 gridstore = { path = "../gridstore" }
 
 common = { path = "../common/common" }
-macros = { path = "../macros" }
+macros = { path = "../macros", package = "qdrant-macros" }
 posting_list = { path = "../posting_list" }
 quantization = { path = "../quantization" }
 sparse = { path = "../sparse" }

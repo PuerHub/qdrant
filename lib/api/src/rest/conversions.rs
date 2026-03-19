@@ -1,3 +1,4 @@
+#[cfg(feature = "grpc")]
 use std::collections::HashMap;
 
 use segment::data_types::order_by::OrderBy;
@@ -9,22 +10,23 @@ use super::{
     FacetRequestInternal, FacetResponse, FacetValue, FacetValueHit, NearestQuery, OrderByInterface,
     Query, QueryInterface, VectorOutput, VectorStructOutput,
 };
-use crate::grpc;
+#[cfg(feature = "grpc")]
 use crate::rest::models::InferenceUsage;
 use crate::rest::{DenseVector, NamedVectorStruct};
 
-impl From<InferenceUsage> for grpc::InferenceUsage {
+#[cfg(feature = "grpc")]
+impl From<InferenceUsage> for crate::grpc::InferenceUsage {
     fn from(value: InferenceUsage) -> Self {
         let mut grpc_usage_models = HashMap::with_capacity(value.models.len());
         for (model, usage) in value.models {
             grpc_usage_models.insert(
                 model,
-                grpc::ModelUsage {
+                crate::grpc::ModelUsage {
                     tokens: usage.tokens,
                 },
             );
         }
-        grpc::InferenceUsage {
+        crate::grpc::InferenceUsage {
             models: grpc_usage_models,
         }
     }

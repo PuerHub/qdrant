@@ -1,9 +1,12 @@
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 
+#[cfg(feature = "grpc")]
 use api::grpc::DecayParamsExpression;
 use api::rest::GeoDistance;
-use api::{grpc, rest};
+#[cfg(feature = "grpc")]
+use api::grpc;
+use api::rest;
 use common::types::ScoreType;
 use itertools::Itertools;
 use segment::common::operation_error::{OperationError, OperationResult};
@@ -213,6 +216,7 @@ impl From<rest::FormulaQuery> for FormulaInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<grpc::Formula> for FormulaInternal {
     type Error = tonic::Status;
 
@@ -349,6 +353,7 @@ impl From<rest::Expression> for ExpressionInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<grpc::Expression> for ExpressionInternal {
     type Error = tonic::Status;
 
@@ -458,6 +463,7 @@ impl TryFrom<grpc::Expression> for ExpressionInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 fn try_from_decay_params(
     params: DecayParamsExpression,
     kind: DecayKind,

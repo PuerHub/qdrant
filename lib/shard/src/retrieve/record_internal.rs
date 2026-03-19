@@ -1,4 +1,6 @@
+#[cfg(feature = "grpc")]
 use api::conversions::json::payload_to_proto;
+#[cfg(feature = "grpc")]
 use api::grpc::conversions::convert_shard_key_to_grpc;
 use segment::data_types::order_by::OrderValue;
 use segment::data_types::segment_record::SegmentRecord;
@@ -89,6 +91,7 @@ impl TryFrom<RecordInternal> for PointStructPersisted {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<RecordInternal> for api::grpc::qdrant::RetrievedPoint {
     fn from(record: RecordInternal) -> Self {
         let RecordInternal {

@@ -58,8 +58,8 @@ cancel = { path = "../common/cancel" }
 issues = { path = "../common/issues" }
 segment = { path = "../segment", default-features = false }
 collection = { path = "../collection" }
-shard = { path = "../shard" }
-api = { path = "../api" }
+shard = { path = "../shard", features = ["grpc"] }
+api = { path = "../api", features = ["grpc"] }
 futures = { workspace = true }
 anyhow = { workspace = true }
 uuid = { workspace = true }

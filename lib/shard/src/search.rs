@@ -1,9 +1,14 @@
 use api::rest::SearchRequestInternal;
 use common::types::ScoreType;
+#[cfg(feature = "grpc")]
 use itertools::Itertools as _;
-use segment::data_types::vectors::{NamedQuery, NamedVectorStruct, VectorInternal};
+use segment::data_types::vectors::{NamedQuery, NamedVectorStruct};
+#[cfg(feature = "grpc")]
+use segment::data_types::vectors::VectorInternal;
 use segment::types::{Filter, SearchParams, WithPayloadInterface, WithVector};
+#[cfg(feature = "grpc")]
 use segment::vector_storage::query::{ContextPair, ContextQuery, DiscoveryQuery, RecoQuery};
+#[cfg(feature = "grpc")]
 use sparse::common::sparse_vector::validate_sparse_vector_impl;
 
 use crate::query::query_enum::QueryEnum;
@@ -67,6 +72,7 @@ impl From<SearchRequestInternal> for CoreSearchRequest {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<api::grpc::qdrant::CoreSearchPoints> for CoreSearchRequest {
     type Error = tonic::Status;
 
@@ -148,6 +154,7 @@ impl TryFrom<api::grpc::qdrant::CoreSearchPoints> for CoreSearchRequest {
     }
 }
 
+#[cfg(feature = "grpc")]
 fn try_context_pair_from_grpc(
     pair: api::grpc::qdrant::ContextPair,
 ) -> Result<ContextPair<VectorInternal>, tonic::Status> {
@@ -163,6 +170,7 @@ fn try_context_pair_from_grpc(
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<api::grpc::qdrant::SearchPoints> for CoreSearchRequest {
     type Error = tonic::Status;
 

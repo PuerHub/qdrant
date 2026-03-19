@@ -123,10 +123,10 @@ common = { path = "lib/common/common" }
 cancel = { path = "lib/common/cancel" }
 issues = { path = "lib/common/issues" }
 segment = { path = "lib/segment", default-features = false }
-shard = { path = "lib/shard", default-features = false }
+shard = { path = "lib/shard", default-features = false, features = ["grpc"] }
 collection = { path = "lib/collection" }
 storage = { path = "lib/storage" }
-api = { path = "lib/api" }
+api = { path = "lib/api", features = ["grpc"] }
 gpu = { path = "lib/gpu" }
 
 actix-multipart = "0.7.2"

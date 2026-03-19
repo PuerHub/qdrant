@@ -12,11 +12,12 @@ edition = "2024"
 workspace = true
 
 [features]
+grpc = ["dep:tonic", "api/grpc"]
 testing = []
 staging = []
 
 [dependencies]
-api = { path = "../api" }
+api = { path = "../api", default-features = false }
 common = { path = "../common/common" }
 segment = { path = "../segment", default-features = false }
 sparse = { path = "../sparse" }
@@ -36,7 +37,7 @@ serde_cbor = { workspace = true }
 smallvec = { workspace = true }
 strum = { workspace = true }
 thiserror = { workspace = true }
-tonic = { workspace = true }
+tonic = { workspace = true, optional = true }
 uuid = { workspace = true }
 validator = { workspace = true }
 wal = { workspace = true }

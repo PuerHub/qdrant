@@ -9,19 +9,23 @@ pub mod query_context;
 #[cfg(test)]
 mod tests;
 
-use api::{grpc, rest};
+#[cfg(feature = "grpc")]
+use api::grpc;
+use api::rest;
 use common::types::ScoreType;
+#[cfg(feature = "grpc")]
 use itertools::Itertools;
 use ordered_float::OrderedFloat;
 use segment::common::reciprocal_rank_fusion::DEFAULT_RRF_K;
 use segment::data_types::order_by::OrderBy;
-use segment::data_types::vectors::{
-    DEFAULT_VECTOR_NAME, NamedQuery, NamedVectorStruct, VectorInternal,
-};
+use segment::data_types::vectors::{NamedQuery, NamedVectorStruct, VectorInternal};
+#[cfg(feature = "grpc")]
+use segment::data_types::vectors::DEFAULT_VECTOR_NAME;
 use segment::index::query_optimization::rescore_formula::parsed_formula::ParsedFormula;
 use segment::types::*;
 use serde::Serialize;
 
+#[cfg(feature = "grpc")]
 use self::formula::*;
 use self::query_enum::*;
 use crate::search::CoreSearchRequest;
@@ -255,6 +259,7 @@ impl From<rest::schema::SearchRequestInternal> for ShardQueryRequest {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<grpc::QueryShardPoints> for ShardQueryRequest {
     type Error = tonic::Status;
 
@@ -298,6 +303,7 @@ impl TryFrom<grpc::QueryShardPoints> for ShardQueryRequest {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<ShardQueryRequest> for grpc::QueryShardPoints {
     fn from(value: ShardQueryRequest) -> Self {
         let ShardQueryRequest {
@@ -332,6 +338,7 @@ impl From<ShardQueryRequest> for grpc::QueryShardPoints {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<ShardPrefetch> for grpc::query_shard_points::Prefetch {
     fn from(value: ShardPrefetch) -> Self {
         let ShardPrefetch {
@@ -356,6 +363,7 @@ impl From<ShardPrefetch> for grpc::query_shard_points::Prefetch {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<grpc::query_shard_points::Prefetch> for ShardPrefetch {
     type Error = tonic::Status;
 
@@ -410,6 +418,7 @@ impl From<rest::Rrf> for FusionInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<grpc::Fusion> for FusionInternal {
     fn from(fusion: grpc::Fusion) -> Self {
         match fusion {
@@ -422,6 +431,7 @@ impl From<grpc::Fusion> for FusionInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<grpc::Rrf> for FusionInternal {
     type Error = tonic::Status;
 
@@ -439,6 +449,7 @@ impl TryFrom<grpc::Rrf> for FusionInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<i32> for FusionInternal {
     type Error = tonic::Status;
 
@@ -451,6 +462,7 @@ impl TryFrom<i32> for FusionInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<FusionInternal> for grpc::Query {
     fn from(fusion: FusionInternal) -> Self {
         use grpc::query::Variant as QueryVariant;
@@ -476,6 +488,7 @@ impl From<FusionInternal> for grpc::Query {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<FusionInternal> for grpc::query_shard_points::Query {
     fn from(fusion: FusionInternal) -> Self {
         use grpc::query_shard_points::Query;
@@ -510,6 +523,7 @@ impl From<rest::Sample> for SampleInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<grpc::Sample> for SampleInternal {
     fn from(value: grpc::Sample) -> Self {
         match value {
@@ -518,6 +532,7 @@ impl From<grpc::Sample> for SampleInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl TryFrom<i32> for SampleInternal {
     type Error = tonic::Status;
 
@@ -530,6 +545,7 @@ impl TryFrom<i32> for SampleInternal {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<SampleInternal> for grpc::Sample {
     fn from(value: SampleInternal) -> Self {
         match value {
@@ -538,6 +554,7 @@ impl From<SampleInternal> for grpc::Sample {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl ScoringQuery {
     fn try_from_grpc_query(
         query: grpc::query_shard_points::Query,
@@ -588,6 +605,7 @@ impl ScoringQuery {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<ScoringQuery> for grpc::query_shard_points::Query {
     fn from(value: ScoringQuery) -> Self {
         use grpc::query_shard_points::query::Score;

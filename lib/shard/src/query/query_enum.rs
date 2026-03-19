@@ -1,6 +1,9 @@
+#[cfg(feature = "grpc")]
 use api::grpc;
 use segment::data_types::vectors::*;
-use segment::types::{VectorName, VectorNameBuf};
+use segment::types::VectorName;
+#[cfg(feature = "grpc")]
+use segment::types::VectorNameBuf;
 use segment::vector_storage::query::*;
 use serde::Serialize;
 use sparse::common::sparse_vector::SparseVector;
@@ -145,6 +148,7 @@ impl From<QueryEnum> for QueryVector {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<QueryEnum> for grpc::QueryEnum {
     fn from(value: QueryEnum) -> Self {
         match value {
@@ -198,6 +202,7 @@ impl From<QueryEnum> for grpc::QueryEnum {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl QueryEnum {
     pub fn from_grpc_raw_query(
         raw_query: grpc::RawQuery,
@@ -290,6 +295,7 @@ impl QueryEnum {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<QueryEnum> for grpc::RawQuery {
     fn from(query: QueryEnum) -> Self {
         use grpc::raw_query::Variant;
